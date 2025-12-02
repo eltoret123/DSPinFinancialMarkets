@@ -76,14 +76,6 @@ def S_continuous(s_values, weights):
 
     return total / w_sum
 
-def S_discrete(score, threshold=0.1):
-    if score > threshold:
-        return 1
-    elif score < -threshold:
-        return -1
-    else:
-        return 0
-
 def S_total(
     n,
     price,
