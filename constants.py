@@ -105,3 +105,5 @@ LAMBDA_DEWMA_FILTER = 0.96             # recommended DEWMA lambda for price filt
 S_NAMES = ["diff", "rsi", "macd", "stoch", "moment"]   # all S-function names
 
 
+
+thresholdDateXtoY = "10/10/2025"
