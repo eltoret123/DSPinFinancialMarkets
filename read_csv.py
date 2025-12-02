@@ -3,6 +3,10 @@ import pandas as pd
 def load_prices(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path, sep=";", engine="python")
     df.rename(columns={df.columns[0]: "Ticker"}, inplace=True)
+
+    date_cols = df.columns[1:].tolist()
+    df = df[["Ticker"] + date_cols[::-1]]
+
     for col in df.columns[1:]:
         s = (
             df[col]

@@ -7,3 +7,5 @@ Tickers = get_all_tickers(df_prices)
 Dates = get_all_dates(df_prices)
 
 
+
+thresholdDateXtoY = "10/10/2025"
