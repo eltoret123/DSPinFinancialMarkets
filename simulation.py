@@ -1,4 +1,4 @@
-import s_functions
+from s_functions import*
 from constants import *
 from read_csv import *
 import random
@@ -13,21 +13,25 @@ def S_total_random():
     return value
 
 
-def SimulationOfAlgorithm(balance,thresholdDate):
-    for dateNum in range(thresholdDate,len(Dates) - 2):
+def SimulationOfAlgorithm(balance,thresholdDate, filteredPrice, weights):
+    for dateNum in range(thresholdDate,len(Dates) - 1):
 
         for tickerNum in range(thresholdDate,len(Tickers) - 1):
-
-            S_function = S_total_random()
-            
-            if(S_function == 0):
-                continue
             
             futureDay = dateNum + 1
             currentDay = dateNum
 
             futurePrice = get_price(df_prices,Tickers[tickerNum],Dates[futureDay])
             currentPrice = get_price(df_prices,Tickers[tickerNum],Dates[currentDay])
+            
+            RSI = rsi()
+            
+            S_function = S_total(dateNum, currentPrice, filteredPrice, )
+            
+            if(S_function == 0):
+                continue
+            
+
 
             if(futurePrice is None or currentPrice is None):
                 continue
