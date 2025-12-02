@@ -14,9 +14,11 @@ def S_total_random():
 
 
 def SimulationOfAlgorithm(balance,thresholdDate):
-    for dateNum in range(thresholdDate,len(Dates) - 2):
 
-        for tickerNum in range(thresholdDate,len(Tickers) - 1):
+    portfolioAtTime = []
+
+    for tickerNum in range(0,len(Tickers)):
+        for dateNum in range(thresholdDate,len(Dates) - 1):
 
             S_function = S_total_random()
             
@@ -40,8 +42,11 @@ def SimulationOfAlgorithm(balance,thresholdDate):
             elif (S_function == -1):
 
                 percentage_change =   (currentPrice - futurePrice)/currentPrice
-                balance[tickerNum] = balance[tickerNum] + balance[tickerNum] * percentage_change  
-    return balance              
+                balance[tickerNum] = balance[tickerNum] + balance[tickerNum] * percentage_change 
+    return balance     
+
+
+         
 
 print(np.sum(SimulationOfAlgorithm(balance,57)))
 
