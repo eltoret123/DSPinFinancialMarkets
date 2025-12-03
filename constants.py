@@ -1,6 +1,6 @@
 from read_csv import*
 
-csv_path = r"DSPinFinancialMarkets\PriceOfSharesTop100.csv"
+csv_path = r"PriceOfSharesTop100.csv"
 df_prices = load_prices(csv_path)
 
 Tickers = get_all_tickers(df_prices)
@@ -58,23 +58,31 @@ weights_6 = {
 # OFFICIAL CONSTANTS FOR TECHNICAL INDICATORS
 # ============================================================
 
+# Lambda from N
+def lambda_from_N(N): return 1 - 2 / (N + 1)   # conversion N → lambda
+
 # RSI (Wilder, 1978)
 RSI_LOW = 0.30          # oversold threshold
 RSI_HIGH = 0.70         # overbought threshold
+RSI_WINDOW = 14          # standard window for RSI
+RSI_LAMBDA = 1 - 2 / (RSI_WINDOW + 1)   # ≈ 0.8667
+
 
 # MACD (Appel, 1979)
 MACD_FAST_N = 12        # fast EMA period
 MACD_SLOW_N = 26        # slow EMA period
 MACD_SIGNAL_N = 9       # signal EMA period
 
-MACD_LAMBDA_FAST = 1 - 2 / (MACD_FAST_N + 1)      # EWMA lambda for fast line
-MACD_LAMBDA_SLOW = 1 - 2 / (MACD_SLOW_N + 1)      # EWMA lambda for slow line
-MACD_LAMBDA_SIGNAL = 1 - 2 / (MACD_SIGNAL_N + 1)  # EWMA lambda for signal line
+MACD_LAMBDA_FAST = lambda_from_N(MACD_FAST_N)      # EWMA lambda for fast line
+MACD_LAMBDA_SLOW = lambda_from_N(MACD_SLOW_N)      # EWMA lambda for slow line
+MACD_LAMBDA_SIGNAL = lambda_from_N(MACD_SIGNAL_N)  # EWMA lambda for signal line
 
 # Stochastic Oscillator (George Lane)
 STOCH_WINDOW = 14       # window length
 STOCH_LOW = 20          # oversold threshold
 STOCH_HIGH = 80         # overbought threshold
+
+STOCH_LAMBDA = lambda_from_N(STOCH_WINDOW)      # EWMA lambda for stoch
 
 # Momentum
 MOMENTUM_K = 14         # momentum lookback
@@ -84,9 +92,6 @@ TREND_THRESHOLD = 0.02  # 2% threshold
 
 # Score quantization for S_total
 SCORE_THRESHOLD = 0.10  # dead zone width
-
-# EWMA: lambda from N
-def lambda_from_N(N): return 1 - 2 / (N + 1)   # conversion N → lambda
 
 # General EWMA & DEWMA lambdas
 EWMA_SHORT = lambda_from_N(12)         # short-term smoothing

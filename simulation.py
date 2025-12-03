@@ -1,6 +1,8 @@
 from s_functions import*
 from constants import *
 from read_csv import *
+from index import *
+from filters import*
 import random
 import numpy as np
 
@@ -13,42 +15,66 @@ def S_total_random():
     return value
 
 
-def SimulationOfAlgorithm(balance,thresholdDate, filteredPrice, weights):
-    for dateNum in range(thresholdDate,len(Dates) - 1):
 
-        for tickerNum in range(thresholdDate,len(Tickers) - 1):
-            
-            futureDay = dateNum + 1
-            currentDay = dateNum
 
-            futurePrice = get_price(df_prices,Tickers[tickerNum],Dates[futureDay])
-            currentPrice = get_price(df_prices,Tickers[tickerNum],Dates[currentDay])
-            
-            RSI = rsi()
-            
-            S_function = S_total(dateNum, currentPrice, filteredPrice, )
-            
-            if(S_function == 0):
+def SimulationOfAlgorithm(balance, thresholdDate, filter_func, weights):
+    lam = 0.0
+    if filter_func == ewma:
+        lam = LAMBDA_PRICE_FILTER
+    elif filter_func == dewma:
+        lam = LAMBDA_DEWMA_FILTER
+
+    for tickerNum in range(len(Tickers)):
+        s = []
+        price = [get_price(df_prices, Tickers[tickerNum], d) for d in Dates]
+        price = np.asarray(price, dtype=float)
+
+        filt = filter_func(price, lam)
+        rsi_all = rsi(price, filter_func)
+        macd_line, macd_signal = macd(price, filter_func)
+        stoch_k, stoch_d = stoch(price, filter_func)
+        #print(rsi_all[:20])
+        #print(stoch_k[:20])
+        #print(stoch_d[:20])
+        #print(macd_line[:20])
+
+
+        for n in range(thresholdDate, len(Dates) - 1):
+            futurePrice = price[n+1]
+            currentPrice = price[n]
+
+            if np.isnan(currentPrice) or np.isnan(futurePrice):
                 continue
             
-
-
-            if(futurePrice is None or currentPrice is None):
+            if np.isnan(filt[n]) or np.isnan(rsi_all[n]) or np.isnan(macd_line[n]) or np.isnan(macd_signal[n]):
                 continue
 
-            if(S_function == 1):
+            S_sig = S_total(
+                n,
+                price,
+                filt,
+                rsi_all,
+                macd_line,
+                macd_signal,
+                stoch_k,
+                stoch_d,
+                weights
+            )
+            
+            s.append(S_sig)
 
-                percentage_change = (futurePrice - currentPrice)/currentPrice
-                balance[tickerNum] = balance[tickerNum] + balance[tickerNum] * percentage_change
+            if S_sig == 0:
+                continue
 
-            elif (S_function == -1):
+            pct_change = (futurePrice - currentPrice) / currentPrice
+            if S_sig == 1:
+                balance[tickerNum] *= (1 + pct_change)
+            elif S_sig == -1:
+                balance[tickerNum] *= (1 - pct_change)
+        print(s)
+    return balance
+   
 
-                percentage_change =   (currentPrice - futurePrice)/currentPrice
-                balance[tickerNum] = balance[tickerNum] + balance[tickerNum] * percentage_change  
-    return balance              
-
-print(np.sum(SimulationOfAlgorithm(balance,57)))
-
-
+print(np.sum(SimulationOfAlgorithm(balance,40,dewma, weights_5)))
 
     

@@ -1,5 +1,5 @@
 import numpy as np
-
+""""
 def sma(x, window):
     x = np.asarray(x, dtype=float)
     sma_values = np.zeros_like(x)
@@ -32,9 +32,9 @@ def sma_vec(x, window):
     w = np.ones(window) / window
     sma = np.convolve(x, w, mode='valid')
     return sma
+"""
 
-
-def ewma_vec(x, lam):
+def ewma(x, lam):
     x = np.asarray(x, dtype=float)
     n = len(x)
 
@@ -43,8 +43,8 @@ def ewma_vec(x, lam):
 
     return y
 
-def dewma_vec(x, lam):
-    y = ewma_vec(x, lam)
-    b = ewma_vec(y, lam)
+def dewma(x, lam):
+    y = ewma(x, lam)
+    b = ewma(y, lam)
     return b
 
